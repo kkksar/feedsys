@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans  
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
+           http://www.springframework.org/schema/context  
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+
+	<!-- dataSource -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl" value="jdbc:mysql://anr:3306?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true" />
+		<property name="user" value="anr" />
+		<property name="password" value="123456" />
+	</bean>
+
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource">
+			<ref local="dataSource" />
+		</property>
+	</bean>
+
+	<!-- dao -->
+	<bean id="contentDao" class="com.ar.wb.feedsys.dao.impl.FeedContentDaoImpl">
+		<property name="contentJt" ref="jdbcTemplate"></property>
+	</bean>
+
+	<!-- memcache -->
+	<bean id="contentMemcache" class="com.ar.wb.feedsys.cache.driver.XmemcachedClient">
+		<property name="serverPort" value="anr:11211"></property>
+	</bean>
+	
+	<!-- service -->
+	<bean id="contentService" class="com.ar.wb.feedsys.service.impl.FeedContentServiceImpl">
+		<property name="memcache" ref="contentMemcache"></property>
+		<property name="fcontentDao" ref="contentDao"></property>
+	</bean>
+
+</beans>
+	
+	
